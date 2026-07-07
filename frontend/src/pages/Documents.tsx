@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { 
-  Box, Typography, Button, Breadcrumbs, Link, Card, 
+import {
+  Box, Typography, Button, Breadcrumbs, Link, Card,
   IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip
 } from '@mui/material';
-import { 
-  Folder as FolderIcon, PictureAsPdf, CreateNewFolder, CloudUpload, NavigateNext, Delete 
+import {
+  Folder as FolderIcon, PictureAsPdf, CreateNewFolder, CloudUpload, NavigateNext, Delete
 } from '@mui/icons-material';
 import api from '../services/api';
 import UploadModal from '../components/UploadModal';
@@ -22,7 +22,7 @@ const Documents = () => {
   const [documents, setDocuments] = useState<any[]>([]);
   const [currentFolder, setCurrentFolder] = useState<FolderNode | null>(null);
   const [breadcrumbs, setBreadcrumbs] = useState<FolderNode[]>([]);
-  
+
   const [uploadOpen, setUploadOpen] = useState(false);
   const [newFolderOpen, setNewFolderOpen] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
@@ -79,7 +79,7 @@ const Documents = () => {
   };
 
   const handleDeleteFolder = async (id: string) => {
-    if(window.confirm('Delete this folder?')) {
+    if (window.confirm('Delete this folder?')) {
       try {
         await api.delete(`/folders/${id}`);
         loadContents(currentFolder);
@@ -115,22 +115,40 @@ const Documents = () => {
     }
   };
 
+  const handleApproveDoc: any = async (id: string, folderId: string | null) => {
+    if (window.confirm('Are you sure you want to approve this document? This will permanently add an "APPROVED" stamp to the file.')) {
+      try {
+        await api.put(`/documents/${id}/approve`);
+        // Refresh the folder that actually contains this document
+        if (folderId) {
+          const folder = folders.find((f) => f._id === folderId) || null;
+          loadContents(folder);
+        } else {
+          loadContents(null);
+        }
+      } catch (error) {
+        console.error('Approve failed', error);
+      }
+    }
+  };
+
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>File Manager</Typography>
         <Box>
-          <Button 
-            variant="outlined" 
-            startIcon={<CreateNewFolder />} 
+          <Button
+            variant="outlined"
+            startIcon={<CreateNewFolder />}
             onClick={() => setNewFolderOpen(true)}
             sx={{ mr: 2, borderRadius: 2 }}
           >
             New Folder
           </Button>
-          <Button 
-            variant="contained" 
-            startIcon={<CloudUpload />} 
+          <Button
+            variant="contained"
+            startIcon={<CloudUpload />}
             onClick={() => setUploadOpen(true)}
             sx={{ borderRadius: 2 }}
             disabled={!currentFolder}
@@ -142,9 +160,9 @@ const Documents = () => {
 
       <Card sx={{ mb: 3, p: 2, borderRadius: 3, bgcolor: 'background.paper' }}>
         <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
-          <Link 
-            component="button" 
-            variant="body1" 
+          <Link
+            component="button"
+            variant="body1"
             onClick={() => handleBreadcrumbClick(-1)}
             underline="hover"
             color={currentFolder === null ? 'text.primary' : 'inherit'}
@@ -175,6 +193,7 @@ const Documents = () => {
               <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
               <TableCell>Size</TableCell>
               <TableCell>Type</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell>Date</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -182,12 +201,12 @@ const Documents = () => {
           <TableBody>
             {folders.length === 0 && documents.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                   <Typography color="text.secondary">This folder is empty.</Typography>
                 </TableCell>
               </TableRow>
             )}
-            
+
             {/* Folders */}
             {folders.map(folder => (
               <TableRow key={folder._id} hover sx={{ cursor: 'pointer' }}>
@@ -199,6 +218,7 @@ const Documents = () => {
                 </TableCell>
                 <TableCell onClick={() => handleFolderClick(folder)}>--</TableCell>
                 <TableCell onClick={() => handleFolderClick(folder)}>Folder</TableCell>
+                <TableCell onClick={() => handleFolderClick(folder)}>--</TableCell>
                 <TableCell onClick={() => handleFolderClick(folder)}>--</TableCell>
                 <TableCell align="right">
                   <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder._id); }}>
@@ -219,8 +239,18 @@ const Documents = () => {
                 </TableCell>
                 <TableCell>{(doc.fileSize / 1024).toFixed(1)} KB</TableCell>
                 <TableCell>PDF</TableCell>
+                <TableCell>
+                  <Chip
+                    label={doc.status}
+                    color={doc.status === 'Approved' ? 'success' : doc.status === 'Active' ? 'primary' : 'default'}
+                    size="small"
+                  />
+                </TableCell>
                 <TableCell>{new Date(doc.uploadedDate).toLocaleDateString()}</TableCell>
                 <TableCell align="right">
+                  {doc.status !== 'Approved' && (
+                    <Button size="small" color="success" onClick={() => handleApproveDoc(doc._id, doc.folderId)}>Approve</Button>
+                  )}
                   <Button size="small" onClick={() => handleDownloadDoc(doc._id, doc.originalFileName)}>Download</Button>
                   <Button size="small" color="error" onClick={() => handleDeleteDoc(doc._id)}>Delete</Button>
                 </TableCell>
@@ -230,10 +260,10 @@ const Documents = () => {
         </Table>
       </TableContainer>
 
-      <UploadModal 
-        open={uploadOpen} 
-        onClose={() => setUploadOpen(false)} 
-        folderId={currentFolder?._id || null} 
+      <UploadModal
+        open={uploadOpen}
+        onClose={() => setUploadOpen(false)}
+        folderId={currentFolder?._id || null}
         onUploadSuccess={() => loadContents(currentFolder)}
       />
 

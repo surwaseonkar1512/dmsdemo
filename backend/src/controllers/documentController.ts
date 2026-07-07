@@ -3,9 +3,11 @@ import { Document as DMSDocument } from '../models/Document';
 import { Folder } from '../models/Folder';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { generateFileChecksum } from '../utils/checksum';
-import { saveFileToDisk, deleteFileFromDisk } from '../utils/fileStorage';
+import { saveFileToDisk, deleteFileFromDisk, resolveStoragePath } from '../utils/fileStorage';
 import { extractTextFromPDF } from '../utils/pdfReader';
 import { AuditLog } from '../models/AuditLog';
+import fs from 'fs';
+import { addWatermarkToPDF } from '../utils/pdfEditor';
 
 export const uploadDocument = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -118,7 +120,7 @@ export const downloadDocument = async (req: AuthRequest, res: Response, next: Ne
       ipAddress: req.ip
     });
 
-    res.download(doc.storagePath, doc.originalFileName);
+    res.download(resolveStoragePath(doc.storagePath), doc.originalFileName);
   } catch (error) {
     next(error);
   }
@@ -144,6 +146,45 @@ export const deleteDocument = async (req: AuthRequest, res: Response, next: Next
     });
 
     res.json({ message: 'Document deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const approveDocument = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const organizationId = req.user!.organizationId;
+
+    const doc = await DMSDocument.findOne({ _id: id, organizationId });
+
+    if (!doc) return res.status(404).json({ message: 'Document not found' });
+    if (doc.status === 'Approved') return res.status(400).json({ message: 'Document is already approved' });
+
+    // Modify the PDF
+    if (doc.mimeType === 'application/pdf') {
+      try {
+        const actualPath = resolveStoragePath(doc.storagePath);
+        await addWatermarkToPDF(actualPath);
+      } catch (pdfError) {
+        console.error('Failed to stamp PDF:', pdfError);
+        return res.status(500).json({ message: 'Failed to apply approval stamp to PDF' });
+      }
+    }
+
+    doc.status = 'Approved';
+    await doc.save();
+
+    await AuditLog.create({
+      organizationId: req.user!.organizationId,
+      userId: req.user!.userId,
+      action: 'Approve',
+      entityType: 'Document',
+      entityId: doc._id,
+      ipAddress: req.ip
+    });
+
+    res.json({ message: 'Document approved successfully', doc });
   } catch (error) {
     next(error);
   }

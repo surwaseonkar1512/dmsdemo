@@ -7,6 +7,14 @@ export const getOrganizationStoragePath = (organizationId: string) => {
   return path.join(BASE_STORAGE_DIR, organizationId);
 };
 
+export const resolveStoragePath = (storedPath: string): string => {
+  const match = storedPath.match(/[\\\/]storage[\\\/](.*)$/);
+  if (match) {
+    return path.join(BASE_STORAGE_DIR, match[1]);
+  }
+  return storedPath;
+};
+
 export const createFolderDirectory = async (organizationId: string, folderPath: string) => {
   // folderPath expected to be something like "/Purchase/2026/January"
   const fullPath = path.join(getOrganizationStoragePath(organizationId), folderPath);

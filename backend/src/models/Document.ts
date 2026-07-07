@@ -13,7 +13,7 @@ export interface IDocument extends MongooseDocument {
   pageCount: number;
   checksum: string;
   searchText: string;
-  status: 'Active' | 'Deleted';
+  status: 'Active' | 'Deleted' | 'Approved';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,7 +32,7 @@ const DocumentSchema: Schema = new Schema(
     pageCount: { type: Number, default: 0 },
     checksum: { type: String, required: true },
     searchText: { type: String },
-    status: { type: String, enum: ['Active', 'Deleted'], default: 'Active' },
+    status: { type: String, enum: ['Active', 'Deleted', 'Approved'], default: 'Active' },
   },
   { timestamps: true }
 );
