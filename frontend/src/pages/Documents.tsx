@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  Box, Typography, Button, Breadcrumbs, Link, Grid, Card, CardContent, 
+  Box, Typography, Button, Breadcrumbs, Link, Card, 
   IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Menu, MenuItem
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
 import { 
-  Folder as FolderIcon, PictureAsPdf, MoreVert, CreateNewFolder, CloudUpload, NavigateNext, Delete 
+  Folder as FolderIcon, PictureAsPdf, CreateNewFolder, CloudUpload, NavigateNext, Delete 
 } from '@mui/icons-material';
 import api from '../services/api';
 import UploadModal from '../components/UploadModal';
@@ -117,8 +117,8 @@ const Documents = () => {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" fontWeight="bold">File Manager</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>File Manager</Typography>
         <Box>
           <Button 
             variant="outlined" 
@@ -148,7 +148,7 @@ const Documents = () => {
             onClick={() => handleBreadcrumbClick(-1)}
             underline="hover"
             color={currentFolder === null ? 'text.primary' : 'inherit'}
-            fontWeight={currentFolder === null ? 'bold' : 'normal'}
+            sx={{ fontWeight: currentFolder === null ? 'bold' : 'normal' }}
           >
             Root
           </Link>
@@ -160,7 +160,7 @@ const Documents = () => {
               onClick={() => handleBreadcrumbClick(index)}
               underline="hover"
               color={index === breadcrumbs.length - 1 ? 'text.primary' : 'inherit'}
-              fontWeight={index === breadcrumbs.length - 1 ? 'bold' : 'normal'}
+              sx={{ fontWeight: index === breadcrumbs.length - 1 ? 'bold' : 'normal' }}
             >
               {crumb.name}
             </Link>
@@ -172,7 +172,7 @@ const Documents = () => {
         <Table>
           <TableHead sx={{ bgcolor: 'action.hover' }}>
             <TableRow>
-              <TableCell fontWeight="bold">Name</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
               <TableCell>Size</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Date</TableCell>
@@ -192,9 +192,9 @@ const Documents = () => {
             {folders.map(folder => (
               <TableRow key={folder._id} hover sx={{ cursor: 'pointer' }}>
                 <TableCell onClick={() => handleFolderClick(folder)}>
-                  <Box display="flex" alignItems="center">
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <FolderIcon color="warning" sx={{ mr: 2, fontSize: 28 }} />
-                    <Typography fontWeight={600}>{folder.name}</Typography>
+                    <Typography sx={{ fontWeight: 600 }}>{folder.name}</Typography>
                   </Box>
                 </TableCell>
                 <TableCell onClick={() => handleFolderClick(folder)}>--</TableCell>
@@ -212,7 +212,7 @@ const Documents = () => {
             {documents.map(doc => (
               <TableRow key={doc._id} hover>
                 <TableCell>
-                  <Box display="flex" alignItems="center">
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <PictureAsPdf color="error" sx={{ mr: 2, fontSize: 28 }} />
                     <Typography>{doc.originalFileName}</Typography>
                   </Box>

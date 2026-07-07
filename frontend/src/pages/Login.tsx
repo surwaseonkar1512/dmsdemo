@@ -33,7 +33,7 @@ const Login = () => {
           <Box sx={{ bgcolor: 'primary.main', p: 1.5, borderRadius: '50%', mb: 2 }}>
             <LockOutlined sx={{ color: 'white', fontSize: 28 }} />
           </Box>
-          <Typography variant="h4" fontWeight="bold">Welcome Back</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>Welcome Back</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             Sign in to Enterprise DMS
           </Typography>
@@ -50,7 +50,7 @@ const Login = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            InputProps={{ sx: { borderRadius: 2 } }}
+            slotProps={{ input: { sx: { borderRadius: 2 } } }}
           />
           <TextField
             fullWidth
@@ -61,7 +61,7 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            InputProps={{ sx: { borderRadius: 2 } }}
+            slotProps={{ input: { sx: { borderRadius: 2 } } }}
           />
           
           <Button

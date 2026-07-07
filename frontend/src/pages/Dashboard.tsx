@@ -15,13 +15,13 @@ interface Stats {
 const StatCard = ({ title, value, icon, color }: { title: string, value: string | number, icon: React.ReactNode, color: string }) => (
   <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
     <Box sx={{ position: 'absolute', top: -15, right: -15, opacity: 0.1, transform: 'scale(3)' }}>
-      {React.cloneElement(icon as React.ReactElement, { sx: { color, fontSize: 100 } })}
+      {React.cloneElement(icon as React.ReactElement<any>, { sx: { color, fontSize: 100 } })}
     </Box>
     <CardContent sx={{ flexGrow: 1, zIndex: 1 }}>
-      <Typography color="text.secondary" gutterBottom variant="subtitle2" fontWeight={600} textTransform="uppercase">
+      <Typography color="text.secondary" gutterBottom variant="subtitle2" sx={{ fontWeight: 600, textTransform: 'uppercase' }}>
         {title}
       </Typography>
-      <Typography variant="h3" fontWeight="bold" color="text.primary">
+      <Typography variant="h3" sx={{ fontWeight: 'bold' }} color="text.primary">
         {value}
       </Typography>
     </CardContent>
@@ -54,33 +54,33 @@ const Dashboard = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  if (loading) return <Box display="flex" justifyContent="center" pt={10}><CircularProgress /></Box>;
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', pt: 10 }}><CircularProgress /></Box>;
   if (!stats) return <Typography>Error loading dashboard.</Typography>;
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight="bold" mb={4}>Dashboard Overview</Typography>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 4 }}>Dashboard Overview</Typography>
       
-      <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard title="Total Documents" value={stats.totalDocuments} icon={<Description />} color="#4361ee" />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard title="Total Folders" value={stats.folderCount} icon={<Folder />} color="#f72585" />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard title="Active Users" value={stats.userCount} icon={<People />} color="#3f37c9" />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard title="Storage Used" value={formatBytes(stats.storageUsed)} icon={<Storage />} color="#4cc9f0" />
         </Grid>
       </Grid>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6" fontWeight="bold" mb={2}>Recent Uploads</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Recent Uploads</Typography>
               <Divider sx={{ mb: 2 }} />
               {stats.recentUploads.length === 0 ? (
                 <Typography color="text.secondary">No recent uploads.</Typography>
@@ -91,7 +91,7 @@ const Dashboard = () => {
                       <ListItem alignItems="flex-start" sx={{ px: 0 }}>
                         <Box sx={{ mr: 2, mt: 1, color: 'error.main' }}><Description /></Box>
                         <ListItemText
-                          primary={<Typography fontWeight={600}>{doc.originalFileName}</Typography>}
+                          primary={<Typography sx={{ fontWeight: 600 }}>{doc.originalFileName}</Typography>}
                           secondary={`Uploaded by ${doc.uploadedBy?.name} on ${new Date(doc.uploadedDate).toLocaleDateString()}`}
                         />
                       </ListItem>
@@ -103,12 +103,12 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card sx={{ height: '100%', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
             <CardContent>
-              <Typography variant="h6" fontWeight="bold" mb={2}>Activity Today</Typography>
-              <Box display="flex" alignItems="baseline">
-                <Typography variant="h2" fontWeight="bold" mr={1}>{stats.todaysUploads}</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Activity Today</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+                <Typography variant="h2" sx={{ fontWeight: 'bold', mr: 1 }}>{stats.todaysUploads}</Typography>
                 <Typography variant="subtitle1">new documents</Typography>
               </Box>
             </CardContent>

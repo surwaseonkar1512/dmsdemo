@@ -65,7 +65,7 @@ const UploadModal: React.FC<Props> = ({ open, onClose, folderId, onUploadSuccess
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle fontWeight="bold">Upload Document</DialogTitle>
+      <DialogTitle sx={{ fontWeight: 'bold' }}>Upload Document</DialogTitle>
       <DialogContent>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         
@@ -93,7 +93,7 @@ const UploadModal: React.FC<Props> = ({ open, onClose, folderId, onUploadSuccess
           ) : (
             <>
               <Typography variant="h6">Drag & drop a PDF here</Typography>
-              <Typography variant="body2" color="text.secondary" mt={1}>or click to select file</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>or click to select file</Typography>
             </>
           )}
         </Box>

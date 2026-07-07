@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
-  Box, Typography, Button, TextField, Grid, Card, CardContent, 
+  Box, Typography, Button, TextField, Card, CardContent, 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   IconButton, Chip, InputAdornment, Pagination, CircularProgress
 } from '@mui/material';
-import { Search as SearchIcon, Download, Delete, PictureAsPdf } from '@mui/icons-material';
-import api, { API_URL } from '../services/api';
+import { Search as SearchIcon, Download, PictureAsPdf } from '@mui/icons-material';
+import api from '../services/api';
 
 const Search = () => {
   const [query, setQuery] = useState('');
@@ -49,41 +49,43 @@ const Search = () => {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight="bold" mb={3}>Full-Text Search</Typography>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3 }}>Full-Text Search</Typography>
       
       <Card sx={{ mb: 4, borderRadius: 3 }}>
         <CardContent>
           <form onSubmit={handleSearch}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={10}>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexDirection: { xs: 'column', md: 'row' } }}>
+              <Box sx={{ flexGrow: 1, width: '100%' }}>
                 <TextField
                   fullWidth
                   placeholder="Search invoices, GST, vendors, amounts, or any text..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon color="action" />
-                      </InputAdornment>
-                    ),
-                    sx: { borderRadius: 2, bgcolor: 'background.default' }
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon color="action" />
+                        </InputAdornment>
+                      ),
+                      sx: { borderRadius: 2, bgcolor: 'background.default' }
+                    }
                   }}
                 />
-              </Grid>
-              <Grid item xs={12} md={2}>
+              </Box>
+              <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
                 <Button 
                   type="submit" 
                   fullWidth 
                   variant="contained" 
                   size="large"
                   disabled={loading || !query.trim()}
-                  sx={{ py: 1.5 }}
+                  sx={{ py: 1.5, minWidth: '120px' }}
                 >
                   {loading ? <CircularProgress size={24} color="inherit" /> : 'Search'}
                 </Button>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </form>
         </CardContent>
       </Card>
@@ -93,7 +95,7 @@ const Search = () => {
           <Table>
             <TableHead sx={{ bgcolor: 'action.hover' }}>
               <TableRow>
-                <TableCell fontWeight="bold">File Name</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>File Name</TableCell>
                 <TableCell>Date</TableCell>
                 <TableCell>Size</TableCell>
                 <TableCell>Uploader</TableCell>
@@ -104,9 +106,9 @@ const Search = () => {
               {results.map((doc) => (
                 <TableRow key={doc._id} hover>
                   <TableCell>
-                    <Box display="flex" alignItems="center">
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <PictureAsPdf color="error" sx={{ mr: 1.5 }} />
-                      <Typography fontWeight={500}>{doc.originalFileName}</Typography>
+                      <Typography sx={{ fontWeight: 500 }}>{doc.originalFileName}</Typography>
                     </Box>
                   </TableCell>
                   <TableCell>{new Date(doc.uploadedDate).toLocaleDateString()}</TableCell>
@@ -125,15 +127,15 @@ const Search = () => {
           </Table>
           
           {total > 1 && (
-            <Box display="flex" justifyContent="center" p={2}>
-              <Pagination count={total} page={page} onChange={(e, p) => handleSearch(undefined, p)} color="primary" />
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+              <Pagination count={total} page={page} onChange={(_, p) => handleSearch(undefined, p)} color="primary" />
             </Box>
           )}
         </TableContainer>
       )}
 
       {!loading && query && results.length === 0 && (
-        <Box textAlign="center" py={10}>
+        <Box sx={{ textAlign: 'center', py: 10 }}>
           <Typography variant="h6" color="text.secondary">No documents found matching "{query}"</Typography>
         </Box>
       )}

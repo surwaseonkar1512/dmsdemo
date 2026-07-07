@@ -48,7 +48,7 @@ const MainLayout: React.FC<Props> = ({ toggleTheme, mode }) => {
   const drawer = (
     <div>
       <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography variant="h6" fontWeight="bold" color="primary">
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }} color="primary">
           Enterprise DMS
         </Typography>
       </Toolbar>
@@ -78,7 +78,7 @@ const MainLayout: React.FC<Props> = ({ toggleTheme, mode }) => {
                 <ListItemIcon sx={{ minWidth: 40, color: active ? 'inherit' : 'text.secondary' }}>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: active ? 600 : 400 }} />
+                <ListItemText primary={<Typography sx={{ fontWeight: active ? 600 : 400 }}>{item.text}</Typography>} />
               </ListItemButton>
             </ListItem>
           );
