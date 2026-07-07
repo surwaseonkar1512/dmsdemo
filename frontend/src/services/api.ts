@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_URL = 'http://localhost:5000/api';
+export const API_URL = 'https://dmsdemo-6dj7.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_URL,
